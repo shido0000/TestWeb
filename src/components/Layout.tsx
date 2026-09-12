@@ -2,23 +2,34 @@ import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, FolderKanban, Target, Scan, AlertTriangle,
-  FileText, Settings, Zap, Menu, X, Bell, Search, ChevronDown
+  FileText, Settings, Zap, Menu, X, Bell, Search, ChevronDown,
+  Gauge, Eye, Shield, Monitor, Play, GitBranch, BookOpen, TreePine
 } from 'lucide-react';
 import { currentUser } from '../data/mockData';
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/projects', icon: FolderKanban, label: 'Projects' },
-  { to: '/targets', icon: Target, label: 'Targets' },
-  { to: '/scans', icon: Scan, label: 'Scans' },
-  { to: '/findings', icon: AlertTriangle, label: 'Findings' },
-  { to: '/reports', icon: FileText, label: 'Reports' },
-  { to: '/settings', icon: Settings, label: 'Settings' },
+  { to: '/', icon: LayoutDashboard, label: 'Dashboard', group: 'Overview' },
+  { to: '/projects', icon: FolderKanban, label: 'Projects', group: 'Overview' },
+  { to: '/targets', icon: Target, label: 'Targets', group: 'Overview' },
+  { to: '/scans', icon: Scan, label: 'Scans', group: 'Overview' },
+  { to: '/findings', icon: AlertTriangle, label: 'Findings', group: 'Overview' },
+  { to: '/crawler', icon: TreePine, label: 'Crawler', group: 'Testing' },
+  { to: '/performance', icon: Gauge, label: 'Performance', group: 'Testing' },
+  { to: '/accessibility', icon: Eye, label: 'Accessibility', group: 'Testing' },
+  { to: '/security', icon: Shield, label: 'Security', group: 'Testing' },
+  { to: '/visual-regression', icon: Monitor, label: 'Visual Diff', group: 'Testing' },
+  { to: '/e2e', icon: Play, label: 'E2E Tests', group: 'Testing' },
+  { to: '/cicd', icon: GitBranch, label: 'CI/CD', group: 'Integration' },
+  { to: '/api-docs', icon: BookOpen, label: 'API Docs', group: 'Integration' },
+  { to: '/reports', icon: FileText, label: 'Reports', group: 'Integration' },
+  { to: '/settings', icon: Settings, label: 'Settings', group: 'Integration' },
 ];
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+
+  const groups = [...new Set(navItems.map(item => item.group))];
 
   return (
     <div className="flex h-screen overflow-hidden bg-surface">
@@ -45,24 +56,31 @@ export default function Layout() {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-            {navItems.map(item => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === '/'}
-                onClick={() => setSidebarOpen(false)}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    isActive
-                      ? 'bg-primary-600/10 text-primary-400 border border-primary-500/20 shadow-sm shadow-primary-500/5'
-                      : 'text-text-secondary hover:text-text-primary hover:bg-surface-lighter/50'
-                  }`
-                }
-              >
-                <item.icon className="w-[18px] h-[18px]" />
-                {item.label}
-              </NavLink>
+          <nav className="flex-1 px-3 py-4 space-y-4 overflow-y-auto">
+            {groups.map(group => (
+              <div key={group}>
+                <p className="px-3 mb-1.5 text-[10px] font-semibold text-text-muted uppercase tracking-widest">{group}</p>
+                <div className="space-y-0.5">
+                  {navItems.filter(item => item.group === group).map(item => (
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      end={item.to === '/'}
+                      onClick={() => setSidebarOpen(false)}
+                      className={({ isActive }) =>
+                        `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                          isActive
+                            ? 'bg-primary-600/10 text-primary-400 border border-primary-500/20 shadow-sm shadow-primary-500/5'
+                            : 'text-text-secondary hover:text-text-primary hover:bg-surface-lighter/50'
+                        }`
+                      }
+                    >
+                      <item.icon className="w-[18px] h-[18px]" />
+                      {item.label}
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
             ))}
           </nav>
 
