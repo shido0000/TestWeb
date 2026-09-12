@@ -481,3 +481,66 @@ model AuditLog {
   @@index([resource, resourceId])
   @@map("audit_logs")
 }
+
+// ============================================
+// INTEGRATIONS (Phase 2)
+// ============================================
+
+model Integration {
+  id        String   @id @default(uuid())
+  projectId String?
+  type      String   // slack, jira, webhook, email, teams, pagerduty
+  name      String
+  enabled   Boolean  @default(true)
+  config    Json     // Integration-specific configuration
+  events    String[] // Events to trigger on
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@map("integrations")
+}
+
+// ============================================
+// CI/CD CONFIGURATIONS (Phase 2)
+// ============================================
+
+model CICDConfig {
+  id             String   @id @default(uuid())
+  projectId      String
+  provider       String   // github_actions, gitlab_ci, jenkins, azure_devops, circleci
+  name           String
+  enabled        Boolean  @default(true)
+  config         Json     // Provider-specific configuration
+  triggerOn      String[] // push, pull_request, merge_request, schedule
+  failOnSeverity String   @default("HIGH")
+  lastRun        DateTime?
+  lastStatus     String?  // passed, failed, skipped
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([projectId])
+  @@map("cicd_configs")
+}
+
+// ============================================
+// E2E TEST FLOWS (Phase 2)
+// ============================================
+
+model E2EFlow {
+  id          String   @id @default(uuid())
+  projectId   String
+  targetId    String
+  name        String
+  description String?
+  steps       Json     // Array of E2EStep objects
+  tags        String[] @default([])
+  lastRun     DateTime?
+  lastStatus  String?  // passed, failed, skipped
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([targetId])
+  @@map("e2e_flows")
+}
