@@ -1,0 +1,483 @@
+// ============================================
+// TestHub Database Schema - Phase 1
+// ============================================
+// This is the Prisma schema for the TestHub platform.
+// It defines all the data models for Phase 1 (MVP).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum UserRole {
+  ADMIN
+  TESTER
+  VIEWER
+}
+
+enum Environment {
+  PRODUCTION
+  STAGING
+  DEVELOPMENT
+}
+
+enum ScanStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum ScanSuite {
+  CONSOLE_ERRORS
+  BROKEN_LINKS
+  ACCESSIBILITY
+  PERFORMANCE
+  SECURITY
+  VISUAL_REGRESSION
+  SEO
+  E2E
+}
+
+enum Severity {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+  INFO
+  WARNING
+}
+
+enum FindingStatus {
+  OPEN
+  ACCEPTED
+  FALSE_POSITIVE
+  FIXED
+  RETEST
+}
+
+enum EvidenceType {
+  SCREENSHOT
+  LOG
+  REQUEST
+  RESPONSE
+  VIDEO
+  DIFF
+  HAR
+}
+
+enum ReportFormat {
+  PDF
+  HTML
+  JSON
+}
+
+// ============================================
+// USER MANAGEMENT
+// ============================================
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String
+  name          String
+  role          UserRole  @default(TESTER)
+  avatar        String?
+  isActive      Boolean   @default(true)
+  lastLoginAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  projects      ProjectMember[]
+  scans         Scan[]         @relation("ScanTriggeredBy")
+  findings      Finding[]      @relation("FindingAssignedTo")
+  apiKeys       ApiKey[]
+  sessions      Session[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model ApiKey {
+  id          String    @id @default(uuid())
+  userId      String
+  name        String
+  key         String    @unique
+  prefix      String
+  permissions String[]  // Array of permission strings
+  isActive    Boolean   @default(true)
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("api_keys")
+}
+
+// ============================================
+// PROJECTS & TARGETS
+// ============================================
+
+model Project {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  tags        String[] @default([])
+  isArchived  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  members     ProjectMember[]
+  targets     Target[]
+  scans       Scan[]
+  findings    Finding[]
+  reports     Report[]
+
+  @@map("projects")
+}
+
+model ProjectMember {
+  id        String   @id @default(uuid())
+  projectId String
+  userId    String
+  role      UserRole @default(TESTER)
+  joinedAt  DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@map("project_members")
+}
+
+model Target {
+  id            String      @id @default(uuid())
+  projectId     String
+  name          String
+  url           String
+  environment   Environment @default(PRODUCTION)
+  authRequired  Boolean     @default(false)
+  headers       Json?       // Record<string, string>
+  cookies       String?
+  scope         Json        // { allowedDomains: string[], excludedPaths: string[], maxDepth: number }
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  project       Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  scans         Scan[]
+  findings      Finding[]
+  crawlResults  CrawlResult[]
+  baselines     VisualBaseline[]
+
+  @@map("targets")
+}
+
+// ============================================
+// SCANS
+// ============================================
+
+model Scan {
+  id            String     @id @default(uuid())
+  projectId     String
+  targetId      String
+  suites        ScanSuite[]
+  status        ScanStatus @default(PENDING)
+  progress      Int        @default(0) // 0-100
+  startedAt     DateTime?
+  completedAt   DateTime?
+  duration      Int?       // seconds
+  triggeredBy   String     // User name or "Scheduled" or "CI/CD"
+  pagesScanned  Int        @default(0)
+  totalRequests Int        @default(0)
+  errorMessage  String?
+  config        Json?      // Scan-specific configuration
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Findings summary (denormalized for performance)
+  criticalCount Int @default(0)
+  highCount     Int @default(0)
+  mediumCount   Int @default(0)
+  lowCount      Int @default(0)
+  infoCount     Int @default(0)
+  warningCount  Int @default(0)
+
+  // Relations
+  project   Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  target    Target        @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  findings  Finding[]
+  evidences Evidence[]
+  reports   Report[]
+  triggeredByUser User?   @relation("ScanTriggeredBy", fields: [triggeredByUserId], references: [id])
+  triggeredByUserId String?
+
+  @@index([projectId, status])
+  @@index([targetId, createdAt])
+  @@map("scans")
+}
+
+// ============================================
+// CRAWLER
+// ============================================
+
+model CrawlResult {
+  id          String   @id @default(uuid())
+  targetId    String
+  url         String
+  title       String?
+  statusCode  Int
+  depth       Int
+  contentType String?
+  linksFound  Int      @default(0)
+  resources   Int      @default(0)
+  loadTime    Int      @default(0) // ms
+  forms       Int      @default(0)
+  inputs      Int      @default(0)
+  discoveredAt DateTime @default(now())
+
+  // Relations
+  target Target @relation(fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@index([targetId, depth])
+  @@map("crawl_results")
+}
+
+// ============================================
+// FINDINGS
+// ============================================
+
+model Finding {
+  id              String        @id @default(uuid())
+  scanId          String
+  projectId       String
+  targetId        String
+  suite           ScanSuite
+  severity        Severity
+  status          FindingStatus @default(OPEN)
+  title           String
+  description     String
+  url             String
+  evidence        String?       // Text evidence
+  recommendation  String?
+  cweId           String?       // CWE identifier
+  cvssScore       Float?        // CVSS score (0-10)
+  wcagCriteria    String?       // WCAG criterion
+  riskScore       Int           @default(0) // 0-100
+  isDuplicate     Boolean       @default(false)
+  duplicateOfId   String?
+  assignedToId    String?
+  resolvedAt      DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  scan        Scan      @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  target      Target    @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  evidences   Evidence[]
+  assignedTo  User?     @relation("FindingAssignedTo", fields: [assignedToId], references: [id])
+
+  @@index([projectId, severity, status])
+  @@index([scanId, suite])
+  @@index([targetId, severity])
+  @@map("findings")
+}
+
+model Evidence {
+  id          String       @id @default(uuid())
+  findingId   String
+  scanId      String
+  type        EvidenceType
+  url         String       // URL to stored file (MinIO/S3)
+  description String?
+  metadata    Json?        // Additional metadata
+  createdAt   DateTime     @default(now())
+
+  finding Finding @relation(fields: [findingId], references: [id], onDelete: Cascade)
+  scan    Scan    @relation(fields: [scanId], references: [id], onDelete: Cascade)
+
+  @@index([findingId])
+  @@map("evidences")
+}
+
+// ============================================
+// VISUAL REGRESSION
+// ============================================
+
+model VisualBaseline {
+  id          String   @id @default(uuid())
+  targetId    String
+  url         String
+  viewport    String   // e.g., "1920x1080"
+  screenshotUrl String // URL to baseline screenshot
+  hash        String   // Perceptual hash for comparison
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  target Target @relation(fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@unique([targetId, url, viewport])
+  @@map("visual_baselines")
+}
+
+model VisualDiff {
+  id                  String   @id @default(uuid())
+  scanId              String
+  baselineId          String
+  url                 String
+  viewport            String
+  currentScreenshotUrl String
+  diffScreenshotUrl   String?
+  mismatchPercentage  Float    @default(0)
+  missingPixels       Int      @default(0)
+  extraPixels         Int      @default(0)
+  status              String   @default("pending") // passed, failed, warning
+  createdAt           DateTime @default(now())
+
+  @@index([scanId])
+  @@map("visual_diffs")
+}
+
+// ============================================
+// PERFORMANCE METRICS
+// ============================================
+
+model PerformanceResult {
+  id                  String  @id @default(uuid())
+  scanId              String
+  url                 String
+  performanceScore    Int
+  accessibilityScore  Int
+  bestPracticesScore  Int
+  seoScore            Int
+  pwaScore            Int
+  // Core Web Vitals
+  fcp                 Float   // First Contentful Paint (ms)
+  lcp                 Float   // Largest Contentful Paint (ms)
+  fid                 Float   // First Input Delay (ms)
+  cls                 Float   // Cumulative Layout Shift
+  ttfb                Float   // Time to First Byte (ms)
+  tbt                 Float   // Total Blocking Time (ms)
+  si                  Float   // Speed Index
+  tti                 Float   // Time to Interactive (ms)
+  // Resource metrics
+  totalWeight         Int     // bytes
+  totalRequests       Int
+  domNodes            Int
+  jsExecutionTime     Float   // ms
+  resources           Json    // Array of { type, count, transferSize, resourceSize }
+  createdAt           DateTime @default(now())
+
+  @@index([scanId])
+  @@map("performance_results")
+}
+
+// ============================================
+// ACCESSIBILITY RESULTS
+// ============================================
+
+model AccessibilityResult {
+  id              String  @id @default(uuid())
+  scanId          String
+  url             String
+  score           Int
+  violations      Int
+  passes          Int
+  incomplete      Int
+  inapplicable    Int
+  wcagAA          Boolean @default(false)
+  wcagAAA         Boolean @default(false)
+  contrastIssues  Int     @default(0)
+  violationsDetail Json   // Array of violation objects
+  createdAt       DateTime @default(now())
+
+  @@index([scanId])
+  @@map("accessibility_results")
+}
+
+// ============================================
+// REPORTS
+// ============================================
+
+model Report {
+  id          String       @id @default(uuid())
+  scanId      String
+  projectId   String
+  format      ReportFormat
+  generatedAt DateTime     @default(now())
+  fileUrl     String       // URL to stored report file
+  fileSize    Int          // bytes
+  findingsCount Int        @default(0)
+  metadata    Json?        // Additional report metadata
+
+  scan    Scan    @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, generatedAt])
+  @@map("reports")
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // scan_completed, finding_created, etc.
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  data      Json?    // Additional notification data
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead, createdAt])
+  @@map("notifications")
+}
+
+// ============================================
+// AUDIT LOG
+// ============================================
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String   // create, update, delete, scan_start, etc.
+  resource  String   // project, target, scan, finding, etc.
+  resourceId String?
+  details   Json?    // Additional details
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([resource, resourceId])
+  @@map("audit_logs")
+}
