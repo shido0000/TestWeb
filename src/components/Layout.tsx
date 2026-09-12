@@ -3,7 +3,8 @@ import { NavLink, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, FolderKanban, Target, Scan, AlertTriangle,
   FileText, Settings, Zap, Menu, X, Bell, Search, ChevronDown,
-  Gauge, Eye, Shield, Monitor, Play, GitBranch, BookOpen, TreePine
+  Gauge, Eye, Shield, Monitor, Play, GitBranch, BookOpen, TreePine,
+  Brain, Activity, Building2, CreditCard
 } from 'lucide-react';
 import { currentUser } from '../data/mockData';
 
@@ -19,6 +20,10 @@ const navItems = [
   { to: '/security', icon: Shield, label: 'Security', group: 'Testing' },
   { to: '/visual-regression', icon: Monitor, label: 'Visual Diff', group: 'Testing' },
   { to: '/e2e', icon: Play, label: 'E2E Tests', group: 'Testing' },
+  { to: '/ai-insights', icon: Brain, label: 'AI Insights', group: 'Intelligence' },
+  { to: '/anomalies', icon: Activity, label: 'Anomalies', group: 'Intelligence' },
+  { to: '/tenants', icon: Building2, label: 'Organizations', group: 'Platform' },
+  { to: '/billing', icon: CreditCard, label: 'Billing', group: 'Platform' },
   { to: '/cicd', icon: GitBranch, label: 'CI/CD', group: 'Integration' },
   { to: '/api-docs', icon: BookOpen, label: 'API Docs', group: 'Integration' },
   { to: '/reports', icon: FileText, label: 'Reports', group: 'Integration' },

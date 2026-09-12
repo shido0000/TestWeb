@@ -314,6 +314,169 @@ export interface ApiKey {
   active: boolean;
 }
 
+// ===== PHASE 3: AI, ANOMALIES, MULTI-TENANT, BILLING =====
+
+export type AIConfidence = 'very-high' | 'high' | 'medium' | 'low';
+export type AnomalyType = 'layout_shift' | 'color_drift' | 'typography_mismatch' | 'missing_element' | 'new_element' | 'spacing_anomaly' | 'motion_anomaly' | 'responsive_break';
+export type AnomalySeverity = 'critical' | 'major' | 'minor' | 'cosmetic';
+export type TenantPlan = 'free' | 'pro' | 'enterprise';
+export type TenantStatus = 'active' | 'suspended' | 'trial';
+export type InvoiceStatus = 'paid' | 'pending' | 'failed' | 'refunded';
+export type BillingInterval = 'monthly' | 'yearly';
+
+export interface AIInsight {
+  id: string;
+  type: 'prioritization' | 'pattern' | 'prediction' | 'recommendation' | 'correlation';
+  title: string;
+  description: string;
+  confidence: AIConfidence;
+  confidenceScore: number; // 0-100
+  affectedFindings: string[];
+  impact: 'critical' | 'high' | 'medium' | 'low';
+  reasoning: string;
+  features: { name: string; weight: number }[];
+  createdAt: string;
+  actionUrl?: string;
+  category: string;
+}
+
+export interface AIPattern {
+  id: string;
+  name: string;
+  description: string;
+  occurrences: number;
+  severity: Severity;
+  relatedUrls: string[];
+  suggestion: string;
+  confidence: number;
+}
+
+export interface AIPrediction {
+  id: string;
+  title: string;
+  probability: number; // 0-100
+  timeframe: string;
+  description: string;
+  preventiveAction: string;
+  relatedComponents: string[];
+  historicalBasis: number;
+}
+
+export interface VisualAnomaly {
+  id: string;
+  type: AnomalyType;
+  severity: AnomalySeverity;
+  url: string;
+  viewport: string;
+  title: string;
+  description: string;
+  detectedAt: string;
+  introducedAt?: string;
+  baselineValue: string;
+  currentValue: string;
+  delta: string;
+  confidence: number;
+  affectedElements: string[];
+  heatmapData?: { x: number; y: number; intensity: number }[];
+  status: 'new' | 'acknowledged' | 'resolved' | 'ignored';
+}
+
+export interface Tenant {
+  id: string;
+  name: string;
+  slug: string;
+  plan: TenantPlan;
+  status: TenantStatus;
+  createdAt: string;
+  members: TenantMember[];
+  usage: TenantUsage;
+  settings: TenantSettings;
+  billingEmail: string;
+  logo?: string;
+}
+
+export interface TenantMember {
+  id: string;
+  userId: string;
+  name: string;
+  email: string;
+  role: 'owner' | 'admin' | 'member' | 'viewer';
+  joinedAt: string;
+  lastActive: string;
+  avatar?: string;
+}
+
+export interface TenantUsage {
+  scansThisMonth: number;
+  scansLimit: number;
+  findingsStored: number;
+  findingsLimit: number;
+  storageUsedMB: number;
+  storageLimitMB: number;
+  apiCallsThisMonth: number;
+  apiCallsLimit: number;
+  teamMembers: number;
+  teamMembersLimit: number;
+  projectsCount: number;
+  projectsLimit: number;
+}
+
+export interface TenantSettings {
+  defaultScanDepth: number;
+  rateLimitPerSecond: number;
+  dataRetentionDays: number;
+  ssoEnabled: boolean;
+  auditLogEnabled: boolean;
+  customDomain?: string;
+  ipAllowlist: string[];
+}
+
+export interface BillingPlan {
+  id: string;
+  name: string;
+  price: { monthly: number; yearly: number };
+  features: string[];
+  limits: {
+    scans: number;
+    findings: number;
+    storageMB: number;
+    apiCalls: number;
+    teamMembers: number;
+    projects: number;
+  };
+  popular?: boolean;
+}
+
+export interface Invoice {
+  id: string;
+  tenantId: string;
+  number: string;
+  date: string;
+  dueDate: string;
+  status: InvoiceStatus;
+  amount: number;
+  currency: string;
+  items: InvoiceItem[];
+  pdfUrl?: string;
+}
+
+export interface InvoiceItem {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+}
+
+export interface PaymentMethod {
+  id: string;
+  type: 'card' | 'bank_transfer' | 'crypto';
+  brand?: string;
+  last4?: string;
+  expMonth?: number;
+  expYear?: number;
+  isDefault: boolean;
+}
+
 export interface DashboardStats {
   totalProjects: number;
   totalScans: number;
