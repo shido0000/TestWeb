@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useApp } from '../store/useStore';
-import { Settings as SettingsIcon, Bell, Shield, Globe, Webhook, Mail, Github, MessageSquare, ToggleLeft, ToggleRight, Save, Key, Database, Cpu, HardDrive } from 'lucide-react';
+import { Settings as SettingsIcon, Bell, Shield, Globe, Webhook, Mail, Github, MessageSquare, ToggleLeft, ToggleRight, Save, Key } from 'lucide-react';
 
 export default function SettingsPage() {
-  const { integrations } = useApp();
+  const { integrations, apiKeys } = useApp();
   const [activeTab, setActiveTab] = useState('general');
   const [notifications, setNotifications] = useState({
     email: true,
@@ -27,6 +27,8 @@ export default function SettingsPage() {
     github: Github,
     webhook: Webhook,
     email: Mail,
+    teams: MessageSquare,
+    pagerduty: Bell,
   };
 
   return (
@@ -258,30 +260,22 @@ export default function SettingsPage() {
               <p className="text-sm text-text-secondary">Manage API keys for CI/CD integration and programmatic access</p>
 
               <div className="space-y-3">
-                <div className="p-4 rounded-lg bg-surface/50 border border-border/50">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-text-primary">Production API Key</p>
-                      <p className="text-xs text-text-muted font-mono mt-1">thub_prod_••••••••••••••••••••a3f8</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 text-xs bg-low/10 text-low rounded-full">Active</span>
-                      <button className="px-2 py-1 text-xs text-text-secondary hover:text-critical border border-border rounded hover:border-critical/30">Revoke</button>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-4 rounded-lg bg-surface/50 border border-border/50">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-text-primary">CI/CD Pipeline Key</p>
-                      <p className="text-xs text-text-muted font-mono mt-1">thub_ci_••••••••••••••••••••b7d2</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 text-xs bg-low/10 text-low rounded-full">Active</span>
-                      <button className="px-2 py-1 text-xs text-text-secondary hover:text-critical border border-border rounded hover:border-critical/30">Revoke</button>
+                {apiKeys.map(key => (
+                  <div key={key.id} className="p-4 rounded-lg bg-surface/50 border border-border/50">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-text-primary">{key.name}</p>
+                        <p className="text-xs text-text-muted font-mono mt-1">{key.prefix}••••••••••••••••••••</p>
+                        <p className="text-[10px] text-text-muted mt-1">Permissions: {key.permissions.join(', ')}</p>
+                        {key.lastUsed && <p className="text-[10px] text-text-muted">Last used: {new Date(key.lastUsed).toLocaleString()}</p>}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 text-xs bg-low/10 text-low rounded-full">{key.active ? 'Active' : 'Revoked'}</span>
+                        <button className="px-2 py-1 text-xs text-text-secondary hover:text-critical border border-border rounded hover:border-critical/30">Revoke</button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
 
               <button className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors">

@@ -28,6 +28,7 @@ const suiteLabels: Record<ScanSuite, string> = {
   security: 'Security',
   visual_regression: 'Visual Regression',
   seo: 'SEO',
+  e2e: 'E2E Tests',
 };
 
 export default function Findings() {
@@ -96,6 +97,7 @@ export default function Findings() {
           <option value="broken_links">Broken Links</option>
           <option value="visual_regression">Visual Regression</option>
           <option value="seo">SEO</option>
+          <option value="e2e">E2E Tests</option>
         </select>
         {(severityFilter !== 'all' || statusFilter !== 'all' || suiteFilter !== 'all') && (
           <button

@@ -11,6 +11,7 @@ const suiteLabels: Record<ScanSuite, string> = {
   security: 'Security Headers & Vulns',
   visual_regression: 'Visual Regression',
   seo: 'SEO Audit',
+  e2e: 'E2E Functional Tests',
 };
 
 const suiteDescriptions: Record<ScanSuite, string> = {
@@ -21,6 +22,7 @@ const suiteDescriptions: Record<ScanSuite, string> = {
   security: 'Security headers, SSL/TLS, OWASP ZAP baseline, Nuclei templates',
   visual_regression: 'Screenshot comparison, pixel diff, layout shift detection',
   seo: 'Meta tags, structured data, Open Graph, sitemap validation',
+  e2e: 'Run user-defined flows with Playwright: login, checkout, forms',
 };
 
 export default function Scans() {
@@ -54,7 +56,7 @@ export default function Scans() {
   };
 
   const selectAllSuites = () => {
-    const allSuites: ScanSuite[] = ['console_errors', 'broken_links', 'accessibility', 'performance', 'security', 'visual_regression', 'seo'];
+    const allSuites: ScanSuite[] = ['console_errors', 'broken_links', 'accessibility', 'performance', 'security', 'visual_regression', 'seo', 'e2e'];
     setSelectedSuites(selectedSuites.length === allSuites.length ? [] : allSuites);
   };
 
