@@ -15,6 +15,10 @@ import { ReportsModule } from './reports/reports.module';
 import { HealthModule } from './health/health.module';
 import { StorageModule } from './storage/storage.module';
 import { IntegrationsModule } from './integrations/integrations.module';
+import { AIModule } from './ai/ai.module';
+import { AnomalyDetectionModule } from './anomaly-detection/anomaly-detection.module';
+import { MultiTenantModule } from './multi-tenant/multi-tenant.module';
+import { BillingModule } from './billing/billing.module';
 
 @Module({
   imports: [
@@ -47,6 +51,12 @@ import { IntegrationsModule } from './integrations/integrations.module';
 
     // Feature Modules (Phase 2)
     IntegrationsModule,
+
+    // Feature Modules (Phase 3)
+    AIModule,
+    AnomalyDetectionModule,
+    MultiTenantModule,
+    BillingModule,
   ],
 })
 export class AppModule {}
