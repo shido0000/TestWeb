@@ -14,6 +14,7 @@ import { FindingsModule } from './findings/findings.module';
 import { ReportsModule } from './reports/reports.module';
 import { HealthModule } from './health/health.module';
 import { StorageModule } from './storage/storage.module';
+import { IntegrationsModule } from './integrations/integrations.module';
 
 @Module({
   imports: [
@@ -34,7 +35,7 @@ import { StorageModule } from './storage/storage.module';
     // Database
     PrismaModule,
 
-    // Feature Modules
+    // Feature Modules (Phase 1)
     AuthModule,
     ProjectsModule,
     TargetsModule,
@@ -43,6 +44,9 @@ import { StorageModule } from './storage/storage.module';
     ReportsModule,
     HealthModule,
     StorageModule,
+
+    // Feature Modules (Phase 2)
+    IntegrationsModule,
   ],
 })
 export class AppModule {}
