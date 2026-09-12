@@ -75,31 +75,37 @@ export default function Scans() {
     <div className="space-y-6 animate-slide-in">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">Scans</h1>
-          <p className="text-sm text-text-secondary mt-1">Launch and monitor automated test suites</p>
+          <h1 className="text-2xl font-bold text-text-primary">Escaneos</h1>
+          <p className="text-sm text-text-secondary mt-1">Lanza y monitorea suites de pruebas automatizadas</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
           className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors shadow-lg shadow-primary-600/20"
         >
-          <Play className="w-4 h-4" /> New Scan
+          <Play className="w-4 h-4" /> Nuevo Escaneo
         </button>
       </div>
 
-      {/* Filters */}
+      {/* Filtros */}
       <div className="flex items-center gap-2 flex-wrap">
-        {['all', 'running', 'completed', 'pending', 'failed'].map(f => (
+        {[
+          { id: 'all', label: 'Todos' },
+          { id: 'running', label: 'En Ejecución' },
+          { id: 'completed', label: 'Completados' },
+          { id: 'pending', label: 'Pendientes' },
+          { id: 'failed', label: 'Fallidos' },
+        ].map(f => (
           <button
-            key={f}
-            onClick={() => setFilter(f)}
+            key={f.id}
+            onClick={() => setFilter(f.id)}
             className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors ${
-              filter === f
+              filter === f.id
                 ? 'bg-primary-500/10 text-primary-400 border-primary-500/30'
                 : 'text-text-secondary border-border hover:border-border-light hover:text-text-primary'
             }`}
           >
-            {f.charAt(0).toUpperCase() + f.slice(1)}
-            {f === 'all' && ` (${scans.length})`}
+            {f.label}
+            {f.id === 'all' && ` (${scans.length})`}
           </button>
         ))}
       </div>

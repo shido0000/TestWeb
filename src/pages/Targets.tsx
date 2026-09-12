@@ -41,24 +41,24 @@ export default function Targets() {
     <div className="space-y-6 animate-slide-in">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">Targets</h1>
-          <p className="text-sm text-text-secondary mt-1">Configure web applications and endpoints to test</p>
+          <h1 className="text-2xl font-bold text-text-primary">Objetivos</h1>
+          <p className="text-sm text-text-secondary mt-1">Configura aplicaciones web y endpoints a probar</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
           className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors shadow-lg shadow-primary-600/20"
         >
-          <Plus className="w-4 h-4" /> Add Target
+          <Plus className="w-4 h-4" /> Agregar Objetivo
         </button>
       </div>
 
-      {/* Authorization Warning */}
+      {/* Advertencia de Autorización */}
       <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 flex items-start gap-3">
         <Shield className="w-5 h-5 text-amber-400 mt-0.5 flex-shrink-0" />
         <div>
-          <p className="text-sm font-medium text-amber-400">Authorization Required</p>
+          <p className="text-sm font-medium text-amber-400">Autorización Requerida</p>
           <p className="text-xs text-text-secondary mt-1">
-            Only scan systems you have explicit authorization to test. Unauthorized scanning may violate laws and terms of service.
+            Solo escanea sistemas que tengas autorización explícita para probar. El escaneo no autorizado puede violar leyes y términos de servicio.
           </p>
         </div>
       </div>
