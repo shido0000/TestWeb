@@ -1,11 +1,16 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { Project, Scan, Finding, Target, Integration, DashboardStats, CrawlResult, PerformanceMetrics, AccessibilityResult, SecurityResult, VisualDiff, E2EFlow, CICDConfig, ApiKey } from '../types';
+import { Project, Scan, Finding, Target, Integration, DashboardStats, CrawlResult, PerformanceMetrics, AccessibilityResult, SecurityResult, VisualDiff, E2EFlow, CICDConfig, ApiKey, AIInsight, AIPattern, AIPrediction, VisualAnomaly, Tenant, BillingPlan, Invoice, PaymentMethod } from '../types';
 import {
   projects as mockProjects, scans as mockScans, findings as mockFindings, targets as mockTargets,
   integrations as mockIntegrations, dashboardStats as mockStats, crawlResults as mockCrawl,
   performanceMetrics as mockPerf, accessibilityResults as mockA11y, securityResults as mockSecurity,
   visualDiffs as mockVisual, e2eFlows as mockE2E, cicdConfigs as mockCICD, apiKeys as mockApiKeys,
 } from '../data/mockData';
+import {
+  aiInsights as mockAIInsights, aiPatterns as mockAIPatterns, aiPredictions as mockAIPredictions,
+  visualAnomalies as mockAnomalies, tenants as mockTenants, billingPlans as mockPlans,
+  invoices as mockInvoices, paymentMethods as mockPayments,
+} from '../data/phase3Data';
 
 interface AppState {
   projects: Project[];
@@ -22,6 +27,17 @@ interface AppState {
   e2eFlows: E2EFlow[];
   cicdConfigs: CICDConfig[];
   apiKeys: ApiKey[];
+  aiInsights: AIInsight[];
+  aiPatterns: AIPattern[];
+  aiPredictions: AIPrediction[];
+  visualAnomalies: VisualAnomaly[];
+  tenants: Tenant[];
+  activeTenantId: string;
+  billingPlans: BillingPlan[];
+  invoices: Invoice[];
+  paymentMethods: PaymentMethod[];
+  setActiveTenant: (id: string) => void;
+  updateAnomalyStatus: (id: string, status: VisualAnomaly['status']) => void;
   addProject: (project: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'findingsCount' | 'targets'>) => void;
   updateProject: (id: string, updates: Partial<Project>) => void;
   deleteProject: (id: string) => void;
@@ -51,6 +67,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [e2eFlows, setE2EFlows] = useState<E2EFlow[]>(mockE2E);
   const [cicdConfigs] = useState<CICDConfig[]>(mockCICD);
   const [apiKeys] = useState<ApiKey[]>(mockApiKeys);
+  const [aiInsights] = useState<AIInsight[]>(mockAIInsights);
+  const [aiPatterns] = useState<AIPattern[]>(mockAIPatterns);
+  const [aiPredictions] = useState<AIPrediction[]>(mockAIPredictions);
+  const [visualAnomalies, setVisualAnomalies] = useState<VisualAnomaly[]>(mockAnomalies);
+  const [tenants] = useState<Tenant[]>(mockTenants);
+  const [activeTenantId, setActiveTenantId] = useState<string>('tenant1');
+  const [billingPlans] = useState<BillingPlan[]>(mockPlans);
+  const [invoices] = useState<Invoice[]>(mockInvoices);
+  const [paymentMethods] = useState<PaymentMethod[]>(mockPayments);
+
+  const setActiveTenant = useCallback((id: string) => { setActiveTenantId(id); }, []);
+
+  const updateAnomalyStatus = useCallback((id: string, status: VisualAnomaly['status']) => {
+    setVisualAnomalies(prev => prev.map(a => a.id === id ? { ...a, status } : a));
+  }, []);
 
   const addProject = useCallback((project: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'findingsCount' | 'targets'>) => {
     const newProject: Project = { ...project, id: `p${Date.now()}`, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), findingsCount: { critical: 0, high: 0, medium: 0, low: 0, info: 0, warning: 0 }, targets: [] };
@@ -95,8 +126,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       projects, scans, findings, targets, integrations, stats, crawlResults,
       performanceMetrics, accessibilityResults, securityResults, visualDiffs,
       e2eFlows, cicdConfigs, apiKeys,
+      aiInsights, aiPatterns, aiPredictions, visualAnomalies,
+      tenants, activeTenantId, billingPlans, invoices, paymentMethods,
       addProject, updateProject, deleteProject, addTarget, deleteTarget, startScan,
       updateFindingStatus, addE2EFlow, updateE2EFlow, deleteE2EFlow,
+      setActiveTenant, updateAnomalyStatus,
     }}>
       {children}
     </AppContext.Provider>
