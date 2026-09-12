@@ -26,14 +26,14 @@ export default function Projects() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">Projects</h1>
-          <p className="text-sm text-text-secondary mt-1">Manage your testing projects and their configurations</p>
+          <h1 className="text-2xl font-bold text-text-primary">Proyectos</h1>
+          <p className="text-sm text-text-secondary mt-1">Gestiona tus proyectos de prueba y sus configuraciones</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
           className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors shadow-lg shadow-primary-600/20"
         >
-          <Plus className="w-4 h-4" /> New Project
+          <Plus className="w-4 h-4" /> Nuevo Proyecto
         </button>
       </div>
 
@@ -41,18 +41,28 @@ export default function Projects() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {projects.map(project => (
           <div key={project.id} className="bg-surface-light border border-border rounded-xl p-5 hover:border-border-light transition-all group">
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex-1 min-w-0">
-                <h3 className="text-base font-semibold text-text-primary truncate">{project.name}</h3>
-                <p className="text-xs text-text-secondary mt-1 line-clamp-2">{project.description}</p>
-              </div>
-              <div className="relative">
-                <button className="p-1.5 text-text-muted hover:text-text-primary rounded-lg hover:bg-surface-lighter transition-colors">
-                  <MoreVertical className="w-4 h-4" />
-                </button>
-              </div>
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base font-semibold text-text-primary truncate">{project.name}</h3>
+              <p className="text-xs text-text-secondary mt-1 line-clamp-2">{project.description}</p>
             </div>
+            <div className="relative">
+              <button className="p-1.5 text-text-muted hover:text-text-primary rounded-lg hover:bg-surface-lighter transition-colors">
+                <MoreVertical className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
 
+          {/* Etiquetas */}
+          {project.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mb-3">
+              {project.tags.map(tag => (
+                <span key={tag} className="px-2 py-0.5 text-xs bg-primary-500/10 text-primary-400 rounded-full border border-primary-500/20">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
             {/* Tags */}
             <div className="flex flex-wrap gap-1.5 mb-4">
               {project.tags.map(tag => (

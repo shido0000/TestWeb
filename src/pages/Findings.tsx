@@ -51,12 +51,12 @@ export default function Findings() {
     <div className="space-y-6 animate-slide-in">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">Findings</h1>
-          <p className="text-sm text-text-secondary mt-1">{filtered.length} findings detected across all scans</p>
+          <h1 className="text-2xl font-bold text-text-primary">Hallazgos</h1>
+          <p className="text-sm text-text-secondary mt-1">{filtered.length} hallazgos detectados en todos los escaneos</p>
         </div>
       </div>
 
-      {/* Filters */}
+      {/* Filtros */}
       <div className="flex flex-wrap items-center gap-3 p-4 bg-surface-light border border-border rounded-xl">
         <Filter className="w-4 h-4 text-text-muted" />
         <select
@@ -64,47 +64,47 @@ export default function Findings() {
           onChange={e => setSeverityFilter(e.target.value as any)}
           className="px-3 py-1.5 bg-surface border border-border rounded-lg text-xs text-text-primary focus:outline-none focus:border-primary-500"
         >
-          <option value="all">All Severities</option>
-          <option value="critical">Critical</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-          <option value="info">Info</option>
-          <option value="warning">Warning</option>
+          <option value="all">Todas las Severidades</option>
+          <option value="critical">Crítico</option>
+          <option value="high">Alto</option>
+          <option value="medium">Medio</option>
+          <option value="low">Bajo</option>
+          <option value="info">Informativo</option>
+          <option value="warning">Advertencia</option>
         </select>
         <select
           value={statusFilter}
           onChange={e => setStatusFilter(e.target.value as any)}
           className="px-3 py-1.5 bg-surface border border-border rounded-lg text-xs text-text-primary focus:outline-none focus:border-primary-500"
         >
-          <option value="all">All Statuses</option>
-          <option value="open">Open</option>
-          <option value="accepted">Accepted</option>
-          <option value="false_positive">False Positive</option>
-          <option value="fixed">Fixed</option>
-          <option value="retest">Retest</option>
+          <option value="all">Todos los Estados</option>
+          <option value="open">Abierto</option>
+          <option value="accepted">Aceptado</option>
+          <option value="false_positive">Falso Positivo</option>
+          <option value="fixed">Corregido</option>
+          <option value="retest">Re-test</option>
         </select>
         <select
           value={suiteFilter}
           onChange={e => setSuiteFilter(e.target.value as any)}
           className="px-3 py-1.5 bg-surface border border-border rounded-lg text-xs text-text-primary focus:outline-none focus:border-primary-500"
         >
-          <option value="all">All Suites</option>
-          <option value="security">Security</option>
-          <option value="accessibility">Accessibility</option>
-          <option value="performance">Performance</option>
-          <option value="console_errors">Console/Network</option>
-          <option value="broken_links">Broken Links</option>
-          <option value="visual_regression">Visual Regression</option>
+          <option value="all">Todas las Suites</option>
+          <option value="security">Seguridad</option>
+          <option value="accessibility">Accesibilidad</option>
+          <option value="performance">Rendimiento</option>
+          <option value="console_errors">Consola/Red</option>
+          <option value="broken_links">Enlaces Rotos</option>
+          <option value="visual_regression">Regresión Visual</option>
           <option value="seo">SEO</option>
-          <option value="e2e">E2E Tests</option>
+          <option value="e2e">Pruebas E2E</option>
         </select>
         {(severityFilter !== 'all' || statusFilter !== 'all' || suiteFilter !== 'all') && (
           <button
             onClick={() => { setSeverityFilter('all'); setStatusFilter('all'); setSuiteFilter('all'); }}
             className="text-xs text-primary-400 hover:text-primary-300"
           >
-            Clear filters
+            Limpiar filtros
           </button>
         )}
       </div>
@@ -164,7 +164,7 @@ export default function Findings() {
           {selected ? (
             <div className="sticky top-0 bg-surface-light border border-border rounded-xl p-5 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-text-primary">Finding Details</h3>
+                <h3 className="text-sm font-semibold text-text-primary">Detalles del Hallazgo</h3>
                 <button onClick={() => setSelectedFinding(null)} className="text-text-muted hover:text-text-primary">
                   <XCircle className="w-4 h-4" />
                 </button>
@@ -177,11 +177,11 @@ export default function Findings() {
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="p-2 rounded-lg bg-surface/50 border border-border/50">
-                  <p className="text-[10px] text-text-muted uppercase">Severity</p>
+                  <p className="text-[10px] text-text-muted uppercase">Severidad</p>
                   <p className={`text-sm font-bold ${severityConfig[selected.severity].color}`}>{selected.severity.toUpperCase()}</p>
                 </div>
                 <div className="p-2 rounded-lg bg-surface/50 border border-border/50">
-                  <p className="text-[10px] text-text-muted uppercase">Risk Score</p>
+                  <p className="text-[10px] text-text-muted uppercase">Puntuación de Riesgo</p>
                   <p className="text-sm font-bold text-text-primary">{selected.riskScore}/100</p>
                 </div>
                 <div className="p-2 rounded-lg bg-surface/50 border border-border/50">
@@ -189,19 +189,19 @@ export default function Findings() {
                   <p className="text-sm font-medium text-text-primary">{suiteLabels[selected.suite]}</p>
                 </div>
                 <div className="p-2 rounded-lg bg-surface/50 border border-border/50">
-                  <p className="text-[10px] text-text-muted uppercase">Status</p>
+                  <p className="text-[10px] text-text-muted uppercase">Estado</p>
                   <p className={`text-sm font-medium ${statusConfig[selected.status].color}`}>{statusConfig[selected.status].label}</p>
                 </div>
               </div>
 
               <div>
-                <p className="text-xs font-medium text-text-muted uppercase mb-1">Description</p>
+                <p className="text-xs font-medium text-text-muted uppercase mb-1">Descripción</p>
                 <p className="text-sm text-text-secondary">{selected.description}</p>
               </div>
 
               {selected.evidence && (
                 <div>
-                  <p className="text-xs font-medium text-text-muted uppercase mb-1">Evidence</p>
+                  <p className="text-xs font-medium text-text-muted uppercase mb-1">Evidencia</p>
                   <div className="p-3 rounded-lg bg-surface border border-border font-mono text-xs text-text-secondary">
                     {selected.evidence}
                   </div>
@@ -210,7 +210,7 @@ export default function Findings() {
 
               {selected.recommendation && (
                 <div>
-                  <p className="text-xs font-medium text-text-muted uppercase mb-1">Recommendation</p>
+                  <p className="text-xs font-medium text-text-muted uppercase mb-1">Recomendación</p>
                   <p className="text-sm text-text-secondary">{selected.recommendation}</p>
                 </div>
               )}
@@ -222,21 +222,27 @@ export default function Findings() {
                 </div>
               )}
 
-              {/* Status Actions */}
+              {/* Acciones de Estado */}
               <div className="pt-3 border-t border-border">
-                <p className="text-xs font-medium text-text-muted uppercase mb-2">Update Status</p>
+                <p className="text-xs font-medium text-text-muted uppercase mb-2">Actualizar Estado</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {(['open', 'accepted', 'false_positive', 'fixed', 'retest'] as FindingStatus[]).map(status => (
+                  {([
+                    { id: 'open', label: 'Abierto' },
+                    { id: 'accepted', label: 'Aceptado' },
+                    { id: 'false_positive', label: 'Falso Positivo' },
+                    { id: 'fixed', label: 'Corregido' },
+                    { id: 'retest', label: 'Re-test' },
+                  ] as { id: FindingStatus; label: string }[]).map(status => (
                     <button
-                      key={status}
-                      onClick={() => updateFindingStatus(selected.id, status)}
+                      key={status.id}
+                      onClick={() => updateFindingStatus(selected.id, status.id)}
                       className={`px-2 py-1 text-xs rounded border transition-colors ${
-                        selected.status === status
+                        selected.status === status.id
                           ? 'bg-primary-500/10 text-primary-400 border-primary-500/30'
                           : 'text-text-secondary border-border hover:border-border-light'
                       }`}
                     >
-                      {statusConfig[status].label}
+                      {status.label}
                     </button>
                   ))}
                 </div>
@@ -244,7 +250,7 @@ export default function Findings() {
 
               <div className="flex items-center gap-2 pt-2">
                 <a href={selected.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-primary-400 hover:text-primary-300">
-                  <ExternalLink className="w-3 h-3" /> Open URL
+                  <ExternalLink className="w-3 h-3" /> Abrir URL
                 </a>
                 <span className="text-text-muted">•</span>
                 <span className="flex items-center gap-1 text-xs text-text-muted">
@@ -255,7 +261,7 @@ export default function Findings() {
           ) : (
             <div className="sticky top-0 bg-surface-light border border-border rounded-xl p-8 text-center">
               <Eye className="w-8 h-8 text-text-muted mx-auto mb-3" />
-              <p className="text-sm text-text-secondary">Select a finding to view details</p>
+              <p className="text-sm text-text-secondary">Selecciona un hallazgo para ver detalles</p>
             </div>
           )}
         </div>

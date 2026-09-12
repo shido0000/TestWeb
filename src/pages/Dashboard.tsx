@@ -14,13 +14,12 @@ const severityColors: Record<string, string> = {
 export default function Dashboard() {
   const { stats, scans, findings } = useApp();
 
-  const statCards = [
-    { label: 'Total Projects', value: stats.totalProjects, icon: Shield, color: 'from-blue-500 to-blue-700', change: '+1 this week' },
-    { label: 'Total Scans', value: stats.totalScans, icon: Zap, color: 'from-purple-500 to-purple-700', change: `${stats.scansThisWeek} this week` },
-    { label: 'Total Findings', value: stats.totalFindings, icon: AlertTriangle, color: 'from-amber-500 to-amber-700', change: '+12 from last scan' },
-    { label: 'Critical Issues', value: stats.criticalFindings, icon: Activity, color: 'from-red-500 to-red-700', change: 'Requires attention' },
-  ];
-
+      const statCards = [
+        { label: 'Total Proyectos', value: stats.totalProjects, icon: Shield, color: 'from-blue-500 to-blue-700', change: '+1 esta semana' },
+        { label: 'Total Escaneos', value: stats.totalScans, icon: Zap, color: 'from-purple-500 to-purple-700', change: `${stats.scansThisWeek} esta semana` },
+        { label: 'Total Hallazgos', value: stats.totalFindings, icon: AlertTriangle, color: 'from-amber-500 to-amber-700', change: '+12 desde último escaneo' },
+        { label: 'Problemas Críticos', value: stats.criticalFindings, icon: Activity, color: 'from-red-500 to-red-700', change: 'Requiere atención' },
+      ];
   const recentScans = scans.slice(0, 4);
 
   return (
@@ -28,12 +27,12 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">Dashboard</h1>
-          <p className="text-sm text-text-secondary mt-1">Overview of your testing activity and findings</p>
+          <h1 className="text-2xl font-bold text-text-primary">Panel de Control</h1>
+          <p className="text-sm text-text-secondary mt-1">Resumen de tu actividad de pruebas y hallazgos</p>
         </div>
         <div className="flex items-center gap-2">
           <span className="flex items-center gap-1.5 px-3 py-1.5 bg-low/10 text-low text-xs font-medium rounded-full border border-low/20">
-            <CheckCircle2 className="w-3 h-3" /> All systems operational
+            <CheckCircle2 className="w-3 h-3" /> Todos los sistemas operativos
           </span>
         </div>
       </div>
@@ -65,8 +64,8 @@ export default function Dashboard() {
         <div className="lg:col-span-2 bg-surface-light border border-border rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-sm font-semibold text-text-primary">Findings Trend</h3>
-              <p className="text-xs text-text-muted">Last 7 days</p>
+              <h3 className="text-sm font-semibold text-text-primary">Tendencia de Hallazgos</h3>
+              <p className="text-xs text-text-muted">Últimos 7 días</p>
             </div>
             <div className="flex items-center gap-3">
               {['Critical', 'High', 'Medium', 'Low'].map(s => (
@@ -114,8 +113,8 @@ export default function Dashboard() {
 
         {/* Severity Distribution */}
         <div className="bg-surface-light border border-border rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-text-primary mb-1">Severity Distribution</h3>
-          <p className="text-xs text-text-muted mb-4">All findings by severity</p>
+          <h3 className="text-sm font-semibold text-text-primary mb-1">Distribución por Severidad</h3>
+          <p className="text-xs text-text-muted mb-4">Todos los hallazgos por severidad</p>
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
@@ -151,8 +150,8 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Suite Distribution */}
         <div className="bg-surface-light border border-border rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-text-primary mb-1">Findings by Suite</h3>
-          <p className="text-xs text-text-muted mb-4">Distribution across test suites</p>
+          <h3 className="text-sm font-semibold text-text-primary mb-1">Hallazgos por Suite</h3>
+          <p className="text-xs text-text-muted mb-4">Distribución a través de suites de prueba</p>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={stats.suiteDistribution} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="#334155" horizontal={false} />
@@ -170,11 +169,11 @@ export default function Dashboard() {
         <div className="bg-surface-light border border-border rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-sm font-semibold text-text-primary">Recent Scans</h3>
-              <p className="text-xs text-text-muted">Latest scan activity</p>
+              <h3 className="text-sm font-semibold text-text-primary">Escaneos Recientes</h3>
+              <p className="text-xs text-text-muted">Última actividad de escaneo</p>
             </div>
             <a href="/scans" className="text-xs text-primary-400 hover:text-primary-300 flex items-center gap-1">
-              View all <ArrowUpRight className="w-3 h-3" />
+              Ver todos <ArrowUpRight className="w-3 h-3" />
             </a>
           </div>
           <div className="space-y-3">
@@ -188,7 +187,7 @@ export default function Dashboard() {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-text-primary truncate">{scan.targetUrl}</p>
                   <p className="text-xs text-text-muted">
-                    {scan.suites.length} suites • {scan.pagesScanned} pages
+                    {scan.suites.length} suites • {scan.pagesScanned} páginas
                   </p>
                 </div>
                 <div className="text-right">
@@ -215,7 +214,7 @@ export default function Dashboard() {
         <div className="bg-critical/5 border border-critical/20 rounded-xl p-5">
           <div className="flex items-center gap-2 mb-3">
             <AlertTriangle className="w-4 h-4 text-critical" />
-            <h3 className="text-sm font-semibold text-critical">Critical Findings Requiring Immediate Attention</h3>
+            <h3 className="text-sm font-semibold text-critical">Hallazgos Críticos que Requieren Atención Inmediata</h3>
           </div>
           <div className="space-y-2">
             {findings.filter(f => f.severity === 'critical').map(finding => (

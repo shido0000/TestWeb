@@ -9,25 +9,25 @@ import {
 import { currentUser } from '../data/mockData';
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Dashboard', group: 'Overview' },
-  { to: '/projects', icon: FolderKanban, label: 'Projects', group: 'Overview' },
-  { to: '/targets', icon: Target, label: 'Targets', group: 'Overview' },
-  { to: '/scans', icon: Scan, label: 'Scans', group: 'Overview' },
-  { to: '/findings', icon: AlertTriangle, label: 'Findings', group: 'Overview' },
-  { to: '/crawler', icon: TreePine, label: 'Crawler', group: 'Testing' },
-  { to: '/performance', icon: Gauge, label: 'Performance', group: 'Testing' },
-  { to: '/accessibility', icon: Eye, label: 'Accessibility', group: 'Testing' },
-  { to: '/security', icon: Shield, label: 'Security', group: 'Testing' },
-  { to: '/visual-regression', icon: Monitor, label: 'Visual Diff', group: 'Testing' },
-  { to: '/e2e', icon: Play, label: 'E2E Tests', group: 'Testing' },
-  { to: '/ai-insights', icon: Brain, label: 'AI Insights', group: 'Intelligence' },
-  { to: '/anomalies', icon: Activity, label: 'Anomalies', group: 'Intelligence' },
-  { to: '/tenants', icon: Building2, label: 'Organizations', group: 'Platform' },
-  { to: '/billing', icon: CreditCard, label: 'Billing', group: 'Platform' },
-  { to: '/cicd', icon: GitBranch, label: 'CI/CD', group: 'Integration' },
-  { to: '/api-docs', icon: BookOpen, label: 'API Docs', group: 'Integration' },
-  { to: '/reports', icon: FileText, label: 'Reports', group: 'Integration' },
-  { to: '/settings', icon: Settings, label: 'Settings', group: 'Integration' },
+  { to: '/', icon: LayoutDashboard, label: 'Panel', group: 'General' },
+  { to: '/projects', icon: FolderKanban, label: 'Proyectos', group: 'General' },
+  { to: '/targets', icon: Target, label: 'Objetivos', group: 'General' },
+  { to: '/scans', icon: Scan, label: 'Escaneos', group: 'General' },
+  { to: '/findings', icon: AlertTriangle, label: 'Hallazgos', group: 'General' },
+  { to: '/crawler', icon: TreePine, label: 'Rastreador', group: 'Pruebas' },
+  { to: '/performance', icon: Gauge, label: 'Rendimiento', group: 'Pruebas' },
+  { to: '/accessibility', icon: Eye, label: 'Accesibilidad', group: 'Pruebas' },
+  { to: '/security', icon: Shield, label: 'Seguridad', group: 'Pruebas' },
+  { to: '/visual-regression', icon: Monitor, label: 'Diff Visual', group: 'Pruebas' },
+  { to: '/e2e', icon: Play, label: 'Pruebas E2E', group: 'Pruebas' },
+  { to: '/ai-insights', icon: Brain, label: 'Análisis IA', group: 'Inteligencia' },
+  { to: '/anomalies', icon: Activity, label: 'Anomalías', group: 'Inteligencia' },
+  { to: '/tenants', icon: Building2, label: 'Organizaciones', group: 'Plataforma' },
+  { to: '/billing', icon: CreditCard, label: 'Facturación', group: 'Plataforma' },
+  { to: '/cicd', icon: GitBranch, label: 'CI/CD', group: 'Integración' },
+  { to: '/api-docs', icon: BookOpen, label: 'Documentación API', group: 'Integración' },
+  { to: '/reports', icon: FileText, label: 'Informes', group: 'Integración' },
+  { to: '/settings', icon: Settings, label: 'Configuración', group: 'Integración' },
 ];
 
 export default function Layout() {
@@ -53,7 +53,7 @@ export default function Layout() {
             </div>
             <div>
               <h1 className="text-lg font-bold text-text-primary tracking-tight">TestHub</h1>
-              <p className="text-[10px] text-text-muted uppercase tracking-widest">Web Testing Platform</p>
+              <p className="text-[10px] text-text-muted uppercase tracking-widest">Plataforma de Testing Web</p>
             </div>
             <button onClick={() => setSidebarOpen(false)} className="ml-auto lg:hidden text-text-secondary hover:text-text-primary">
               <X className="w-5 h-5" />
@@ -118,7 +118,7 @@ export default function Layout() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
               <input
                 type="text"
-                placeholder="Search projects, findings, scans..."
+                placeholder="Buscar proyectos, hallazgos, escaneos..."
                 className="w-full pl-10 pr-4 py-2 bg-surface border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/20 transition-all"
               />
             </div>
@@ -145,10 +145,10 @@ export default function Layout() {
 
               {profileOpen && (
                 <div className="absolute right-0 top-full mt-2 w-48 bg-surface-light border border-border rounded-lg shadow-xl z-50 py-1">
-                  <a href="#" className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-lighter">Profile</a>
-                  <a href="#" className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-lighter">Settings</a>
+                  <a href="#" className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-lighter">Perfil</a>
+                  <a href="#" className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-lighter">Configuración</a>
                   <hr className="my-1 border-border" />
-                  <a href="#" className="block px-4 py-2 text-sm text-critical hover:bg-surface-lighter">Sign Out</a>
+                  <a href="#" className="block px-4 py-2 text-sm text-critical hover:bg-surface-lighter">Cerrar Sesión</a>
                 </div>
               )}
             </div>
