@@ -104,6 +104,7 @@ model User {
   apiKeys       ApiKey[]
   sessions      Session[]
   notifications Notification[]
+  tenantMemberships TenantMember[]
 
   @@map("users")
 }
@@ -143,6 +144,7 @@ model ApiKey {
 
 model Project {
   id          String   @id @default(uuid())
+  tenantId    String
   name        String
   description String?
   tags        String[] @default([])
@@ -151,12 +153,14 @@ model Project {
   updatedAt   DateTime @updatedAt
 
   // Relations
+  tenant      Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   members     ProjectMember[]
   targets     Target[]
   scans       Scan[]
   findings    Finding[]
   reports     Report[]
 
+  @@index([tenantId])
   @@map("projects")
 }
 
@@ -543,4 +547,156 @@ model E2EFlow {
   @@index([projectId])
   @@index([targetId])
   @@map("e2e_flows")
+}
+
+// ============================================
+// AI INSIGHTS (Phase 3)
+// ============================================
+
+model AIInsight {
+  id               String   @id @default(uuid())
+  projectId        String
+  type             String   // prioritization, pattern, prediction, correlation, recommendation
+  title            String
+  description      String
+  confidence       Int      // 0-100
+  impact           String   // critical, high, medium, low
+  affectedFindings String[] // Array of finding IDs
+  reasoning        String
+  features         Json     // Array of { name, weight }
+  category         String?
+  createdAt        DateTime @default(now())
+
+  @@index([projectId])
+  @@index([type])
+  @@map("ai_insights")
+}
+
+// ============================================
+// VISUAL ANOMALIES (Phase 3)
+// ============================================
+
+model VisualAnomaly {
+  id               String   @id @default(uuid())
+  targetId         String
+  type             String   // layout_shift, color_drift, typography_mismatch, missing_element, new_element, spacing_anomaly, motion_anomaly, responsive_break
+  severity         String   // critical, major, minor, cosmetic
+  url              String
+  viewport         String
+  title            String
+  description      String
+  detectedAt       DateTime @default(now())
+  introducedAt     DateTime?
+  baselineValue    String
+  currentValue     String
+  delta            String
+  confidence       Int      // 0-100
+  affectedElements String[] // Array of CSS selectors
+  heatmapData      Json?    // Array of { x, y, intensity }
+  status           String   @default("new") // new, acknowledged, resolved, ignored
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([targetId])
+  @@index([status])
+  @@index([detectedAt])
+  @@map("visual_anomalies")
+}
+
+// ============================================
+// MULTI-TENANT (Phase 3)
+// ============================================
+
+model Tenant {
+  id              String   @id @default(uuid())
+  name            String
+  slug            String   @unique
+  plan            String   @default("free") // free, pro, enterprise
+  status          String   @default("trial") // active, suspended, trial
+  billingEmail    String?
+  stripeCustomerId String? @unique
+  settings        Json     @default("{}")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  members         TenantMember[]
+  projects        Project[]
+
+  @@index([slug])
+  @@map("tenants")
+}
+
+model TenantMember {
+  id        String   @id @default(uuid())
+  tenantId  String
+  userId    String
+  role      String   @default("member") // owner, admin, member, viewer
+  joinedAt  DateTime @default(now())
+
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, userId])
+  @@index([tenantId])
+  @@index([userId])
+  @@map("tenant_members")
+}
+
+// ============================================
+// BILLING (Phase 3)
+// ============================================
+
+model Subscription {
+  id                    String   @id @default(uuid())
+  tenantId              String
+  planId                String
+  status                String   @default("active") // active, past_due, canceled, trialing
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  cancelAtPeriodEnd     Boolean  @default(false)
+  stripeSubscriptionId  String?  @unique
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  invoices              Invoice[]
+
+  @@index([tenantId])
+  @@index([status])
+  @@map("subscriptions")
+}
+
+model Invoice {
+  id              String   @id @default(uuid())
+  tenantId        String
+  subscriptionId  String
+  amount          Float
+  currency        String   @default("USD")
+  status          String   @default("pending") // paid, pending, failed, refunded
+  invoiceDate     DateTime
+  dueDate         DateTime
+  pdfUrl          String?
+  stripeInvoiceId String?  @unique
+  createdAt       DateTime @default(now())
+
+  subscription    Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([status])
+  @@map("invoices")
+}
+
+model PaymentMethod {
+  id                    String   @id @default(uuid())
+  tenantId              String
+  type                  String   // card, bank_transfer
+  last4                 String?
+  brand                 String?
+  expMonth              Int?
+  expYear               Int?
+  isDefault             Boolean  @default(false)
+  stripePaymentMethodId String?  @unique
+  createdAt             DateTime @default(now())
+
+  @@index([tenantId])
+  @@map("payment_methods")
 }
